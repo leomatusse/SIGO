@@ -135,4 +135,9 @@ public class Ocorrencia implements Serializable {
        int anoAtual = Year.now().getValue();
        return contador + "/"+ anoAtual;
    }
+
+    public void setNumeroBO(String numeroBO) {
+        this.numeroBO = numeroBO;
+    }
+   
 }

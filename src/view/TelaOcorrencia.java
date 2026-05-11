@@ -271,6 +271,8 @@ public class TelaOcorrencia extends JFrame {
     
     public void limparCampoDataNasc (){
         campoDataNasc.setDate(null);
+        campoDataNasc.repaint();
+        campoDataNasc.revalidate();
     }
 
     public void limparCamposOcorrencia() {

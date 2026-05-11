@@ -34,58 +34,50 @@ public class Ficheiros {
         detencoes = new ArrayList <>();
     }
     
-    public void saveDetencao(ArrayList <Detencao> detencao) throws FileNotFoundException{
-        try(ObjectOutputStream save = new ObjectOutputStream (new FileOutputStream ("C:\\Users\\user\\Desktop\\detencoes.dat"))) {
-            save.writeObject(detencoes);
-            
-        } catch(IOException e ){
-            e.printStackTrace();
-            System.out.println("Erro ao guardar ficheiro:"+ e.getMessage());
-         }
-    }
-    
-    public void readDetencao(){
-        try(ObjectInputStream read = new ObjectInputStream(new FileInputStream("C:\\Users\\user\\Desktop\\ detencoes.dat"))){
-            this.detencoes = (ArrayList<Detencao>)read.readObject();
-        }catch(IOException e){
-            System.out.println("Erro ao ler ficheiro");
-            e.printStackTrace();
-            
-            this.detencoes = new ArrayList<>();
-       
-        } catch (ClassNotFoundException ex) {
-            System.getLogger(Ficheiros.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            System.out.println("Ficheiro nao encontrado");
-        }
-    }
-    
-    public void saveOcorrencia (ArrayList <Ocorrencia> ocorrencia){
-         try(ObjectOutputStream save = new ObjectOutputStream (new FileOutputStream ("C:\\Users\\user\\Desktop\\ocorrencias.dat"))) {
-          
-          save.writeObject(ocorrencias);
-          
-      } catch (IOException e){
-        System.out.println("Erro ao guardar ficheiro: " + e.getMessage());
+   public void saveDetencao(ArrayList<Detencao> detencao) throws FileNotFoundException {
+    try (ObjectOutputStream save = new ObjectOutputStream(new FileOutputStream("C:\\Users\\user\\Desktop\\detencoes.dat"))) {
+        save.writeObject(detencoes);
+        save.writeInt(contadorDetencao); // guardar contador
+    } catch (IOException e) {
         e.printStackTrace();
-      }
     }
+}
+
+public void readDetencao() {
+    try (ObjectInputStream read = new ObjectInputStream(new FileInputStream("C:\\Users\\user\\Desktop\\detencoes.dat"))) {
+        this.detencoes = (ArrayList<Detencao>) read.readObject();
+        this.contadorDetencao = read.readInt(); // ler contador
+        System.out.println("Contador Detencao carregado: " + contadorDetencao);
+    } catch (IOException e) {
+        this.detencoes = new ArrayList<>();
+        this.contadorDetencao = 0;
+    } catch (ClassNotFoundException ex) {
+        ex.printStackTrace();
+    }
+}
     
-    public void readOcorrencia () throws ClassNotFoundException{
-         try (ObjectInputStream read = new ObjectInputStream(new FileInputStream("C:\\Users\\user\\Desktop\\ocorrencias.dat"))) {
-               this.ocorrencias = (ArrayList<Ocorrencia>)read.readObject();
-               
-           }catch (IOException e){
-                System.out.println("Erro ao ler o ficheiro.");
-                e.printStackTrace();
-                
-                this.ocorrencias = new ArrayList<>();
-                
-           } catch (ClassNotFoundException ex) {
-            System.getLogger(Ficheiros.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            System.out.println("Ficheiro nao encontrado");
-            
-        }   
+  public void saveOcorrencia(ArrayList<Ocorrencia> ocorrencia) {
+    try (ObjectOutputStream save = new ObjectOutputStream(new FileOutputStream("C:\\Users\\user\\Desktop\\ocorrencias.dat"))) {
+        save.writeObject(ocorrencias);
+        save.writeInt(contadorBO); // guardar contador
+    } catch (IOException e) {
+        e.printStackTrace();
     }
+  }
+
+public void readOcorrencia() throws ClassNotFoundException {
+    try (ObjectInputStream read = new ObjectInputStream(new FileInputStream("C:\\Users\\user\\Desktop\\ocorrencias.dat"))) {
+        this.ocorrencias = (ArrayList<Ocorrencia>) read.readObject();
+        this.contadorBO = read.readInt(); // ler contador
+        System.out.println("Contador BO carregado: " + contadorBO);
+    } catch (IOException e) {
+        this.ocorrencias = new ArrayList<>();
+        this.contadorBO = 0;
+    } catch (ClassNotFoundException ex) {
+        ex.printStackTrace();
+    }
+}
+
     
 
 

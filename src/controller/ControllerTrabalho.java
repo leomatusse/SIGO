@@ -46,6 +46,12 @@ public class ControllerTrabalho {
 
     }
     public void configurarEventos (){
+        try{
+            ficheiro.readOcorrencia();
+            ficheiro.readDetencao();
+        } catch (Exception ex){
+            ex.printStackTrace();
+        }
         viewMenu.getBtnOcorrencia().addActionListener(e ->{
           viewOcorrencias = new TelaOcorrencia();
           
@@ -81,7 +87,11 @@ public class ControllerTrabalho {
         });
         
         telaDetencao.getBtnEncerrar().addActionListener(e ->{
-            encerrarDetencao ();
+            try {
+                encerrarDetencao ();
+            } catch (FileNotFoundException ex) {
+                System.getLogger(ControllerTrabalho.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
+            }
         });
         telaDetencao.getBtnActualizar().addActionListener(e -> {
             listarDetencoes();
@@ -100,7 +110,7 @@ public class ControllerTrabalho {
         
     }
     
-    public void encerrarDetencao (){
+    public void encerrarDetencao () throws FileNotFoundException{
         if (viewDetencao.getIDDetencao().isEmpty()){
               JOptionPane.showMessageDialog(null,
                 "Insira o ID da detencaoo.", "Aviso",
@@ -127,15 +137,11 @@ public class ControllerTrabalho {
             }
             
             detencao.encerrarDetencao(Detencao.StatusDetencao.LIBERTADO, viewDetencao.getDesfecho());
-            try{
-                ficheiro.saveDetencao(ficheiro.getDetencoes());
-                DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                String horaEncerramento = LocalDateTime.now().format(fmt);
-                JOptionPane.showMessageDialog(null,"Detencao encerrada!\nID: " + viewDetencao.getIDDetencao() +"\nDesfecho: " + desfecho + "\nEncerrada em: " + horaEncerramento);
-                viewDetencao.limparCamposDetencao();
-            } catch (FileNotFoundException ex){
-                JOptionPane.showMessageDialog(null, "Erro ao guardar: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-            }
+            ficheiro.saveDetencao(ficheiro.getDetencoes());
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+            String horaEncerramento = LocalDateTime.now().format(fmt);
+            JOptionPane.showMessageDialog(null,"Detencao encerrada!\nID: " + viewDetencao.getIDDetencao() +"\nDesfecho: " + desfecho + "\nEncerrada em: " + horaEncerramento);
+            viewDetencao.limparCamposDetencao();
          }
     }
     public void eventosOcorrencia ( TelaOcorrencia telaOcorrencia){
@@ -149,6 +155,11 @@ public class ControllerTrabalho {
         telaOcorrencia.getBtnActualizarOcorrencias().addActionListener (e ->{
             listarOcorrencias();
         });
+        
+        telaOcorrencia.getBtnFechar().addActionListener(e -> {
+            if (JOptionPane.showConfirmDialog(null, "DESEJA SAIR?", "Sair", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+                telaOcorrencia.dispose();
+        });
     }
     public void limparCampos (){
        viewOcorrencias.limparCamposOcorrencia();
@@ -157,8 +168,7 @@ public class ControllerTrabalho {
     }
     public void registarOcorrencia(){
         OcorrenciaDto ocorrenciaDto = viewOcorrencias.recolherDadosOcorrencia();
-        Ocorrencia ocorrencia = new Ocorrencia(ocorrenciaDto.localOcorrencia, ocorrenciaDto.nomeOficial);
-        if (ocorrenciaDto.localOcorrencia.trim().isEmpty()){
+          if (ocorrenciaDto.localOcorrencia.trim().isEmpty()){
             JOptionPane.showMessageDialog(null, "Insira o local da ocorrencia.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -166,49 +176,67 @@ public class ControllerTrabalho {
             JOptionPane.showMessageDialog(null, "Insira o nome do oficial.", "Aviso", JOptionPane.WARNING_MESSAGE);
             return;
         }
+        Ocorrencia ocorrencia = new Ocorrencia(ocorrenciaDto.localOcorrencia, ocorrenciaDto.nomeOficial);
+        ocorrencia.setNumeroBO(ocorrencia.gerarIDBO(ficheiro.proximoIDBO()));
+       
         int resposta = 0;
         do{
             Civil civil = new Civil ();
             CivilDto civilDto = viewOcorrencias.recolherDadosCivil();
-            String idBI;
+          
             boolean existe = false;
-            do {
-                idBI = viewOcorrencias.pedirNumeroBI();
-            
-            if (civil.validarID(idBI))
-                existe = true;
-              else {
-                viewOcorrencias.mostrarMensagem("NUMERO DE BI EXISTE OU INVALIDO.");
-                int resposta1 = JOptionPane.showConfirmDialog(null, "DIGITE NOVAMENTE", "AVISO", JOptionPane.YES_NO_OPTION);
-                if (resposta1 != JOptionPane.YES_OPTION) return;
-                viewOcorrencias.limparCampoBI();
+          String idBI = viewOcorrencias.pedirNumeroBI();
+
+            if (idBI.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Insira o numero do BI.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            boolean biDuplicado = false;
+            for (Civil c : ocorrencia.getEnvolvidos()) {
+                if (c.getBI().equals(idBI)) {
+                    biDuplicado = true;
+                    break;
                 }
-            } while (!existe);
+            }
+
+            if (biDuplicado) {
+                JOptionPane.showMessageDialog(null, "BI JA EXISTE.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                viewOcorrencias.limparCampoBI();
+                return;
+            }
+
+
               civilDto.idBI= idBI;
            
             existe= false;
-            LocalDate dataNascimento;
-            do{
-                dataNascimento = viewOcorrencias.pedirDataNascimento();
-                //dataNascimento = viewOcorrencias.pedirDataNascimento();
-                if (dataNascimento == null){
-                    JOptionPane.showMessageDialog(null, "Seleccione a data de nascimento.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                    continue; 
-                }
-           
-               if (Civil.validarAnos(dataNascimento))
-                   existe = true;
-               else {
-                    viewOcorrencias.mostrarMensagem("MENOR DE IDADE");
-                    int resposta1 = JOptionPane.showConfirmDialog(null, "DIGITE A DATA DE NASCIMENTO NOVAMENTE", "AVISO", JOptionPane.YES_OPTION);
-                    if (resposta1 != JOptionPane.YES_OPTION) return;
-                    viewOcorrencias.limparCampoDataNasc();
-               }
-            }while ( !existe);
+         
+         LocalDate dataNascimento = viewOcorrencias.pedirDataNascimento();
+
+            if (dataNascimento == null) {
+                JOptionPane.showMessageDialog(null, 
+                    "Seleccione a data de nascimento.", "Aviso", 
+                    JOptionPane.WARNING_MESSAGE);
+                return; // utilizador corrige e clica Guardar novamente
+            }
+
+            if (!Civil.validarAnos(dataNascimento)) {
+                JOptionPane.showMessageDialog(null, 
+                    "Envolvido menor de idade.", "Aviso", 
+                    JOptionPane.WARNING_MESSAGE);
+                viewOcorrencias.limparCampoDataNasc();
+                return; // utilizador corrige e clica Guardar novamente
+            }
             civilDto.dataNascimento = dataNascimento.toString();
             ocorrencia.getEnvolvidos().add(new Civil (civilDto.nome, civilDto.idBI, civilDto.contacto, civilDto.papel, civilDto.dataNascimento, civilDto.nacionalidade, civilDto.sexo, civilDto.enderenco, civilDto.estadoCivil));
+            
+            viewOcorrencias.limparCamposCivil();
+            viewOcorrencias.limparCampoBI();
+            viewOcorrencias.limparCampoDataNasc();
+            
             resposta = viewOcorrencias.perguntarDecisao();
         }while (resposta== JOptionPane.YES_OPTION);
+        
         viewOcorrencias.setLblBO(ocorrencia.getNumeroBO());
         viewOcorrencias.setLblData(  ocorrencia.getDataHora());
       
