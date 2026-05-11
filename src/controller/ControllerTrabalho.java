@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 //import javax.swing.JOptionPane;
 import model.Civil;
+import model.Civil.papelCivil;
 import model.Crime;
 import model.Detencao;
 import model.Ficheiros;
@@ -211,7 +212,7 @@ public class ControllerTrabalho {
            
             existe= false;
          
-         LocalDate dataNascimento = viewOcorrencias.pedirDataNascimento();
+             LocalDate dataNascimento = viewOcorrencias.pedirDataNascimento();
 
             if (dataNascimento == null) {
                 JOptionPane.showMessageDialog(null, 
@@ -220,12 +221,13 @@ public class ControllerTrabalho {
                 return; // utilizador corrige e clica Guardar novamente
             }
 
-            if (!Civil.validarAnos(dataNascimento)) {
+       
+            if (civilDto.papel == papelCivil.SUSPEITO && !Civil.validarAnos(dataNascimento)) {
                 JOptionPane.showMessageDialog(null, 
-                    "Envolvido menor de idade.", "Aviso", 
-                    JOptionPane.WARNING_MESSAGE);
+                    "Suspeito menor de idade. Nao pode ser registado como suspeito.", 
+                    "Aviso", JOptionPane.WARNING_MESSAGE);
                 viewOcorrencias.limparCampoDataNasc();
-                return; // utilizador corrige e clica Guardar novamente
+                return;
             }
             civilDto.dataNascimento = dataNascimento.toString();
             ocorrencia.getEnvolvidos().add(new Civil (civilDto.nome, civilDto.idBI, civilDto.contacto, civilDto.papel, civilDto.dataNascimento, civilDto.nacionalidade, civilDto.sexo, civilDto.enderenco, civilDto.estadoCivil));
@@ -235,6 +237,7 @@ public class ControllerTrabalho {
             viewOcorrencias.limparCampoDataNasc();
             
             resposta = viewOcorrencias.perguntarDecisao();
+            
         }while (resposta== JOptionPane.YES_OPTION);
         
         viewOcorrencias.setLblBO(ocorrencia.getNumeroBO());

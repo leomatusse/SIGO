@@ -17,7 +17,8 @@ public class CrimeDto {
     public LocalDate dataDoCrime;
     public  String armaDoCrime;
     public   Crime.EstadoFlagrancia estadoDeFlagrancia;
-    public String tipoDeCrime; 
+    public String tipoDeCrime;
+    public String autorDoCrime;
     public CrimeDto(String localCrime, LocalDate dataCrime, String armaCrime, EstadoFlagrancia estadoD, String tipoCrime) {
         this.localDoCrime = localCrime;
         this.dataDoCrime = dataCrime;
