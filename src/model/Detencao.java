@@ -92,45 +92,77 @@ public class Detencao implements Serializable {
     public LocalDateTime getHoraDofiDaDetencao(){
         return horaDoFimDaDetencao;
     }
-    public void setHoraDofiDaDetencao(LocalDateTime h)   { this.horaDoFimDaDetencao = h; }
+    public void setHoraDofiDaDetencao(LocalDateTime h){
+        this.horaDoFimDaDetencao = h; 
+    }
 
-    public String getNomeDoDetido()                      { return nomeDoDetido; }
-    public void setNomeDoDetido(String n)                { this.nomeDoDetido = n; }
+    public String getNomeDoDetido() { 
+        return nomeDoDetido; 
+    }
 
-    public String getMotivoDaDetencao()                  { return motivoDaDetencao; }
-    public void setMotivoDaDetencao(String m)            { this.motivoDaDetencao = m; }
-
-    public String getLocalDaDetencao()                   { return LocalDaDetencao; }
-    public void setLocalDaDetencao(String l)             { this.LocalDaDetencao = l; }
-
-    public String getAgenteResponsavel()                 { return agenteResponsavel; }
-    public void setAgenteResponsavel(String a)           { this.agenteResponsavel = a; }
-
-    public StatusDetencao getStatus()                    { return status; }
-    public void setStatus(StatusDetencao s)              { this.status = s; }
-
-    public String getDesfecho()                          { return desfecho; }  
-    public void setDesfecho(String d)                    { this.desfecho = d; } 
-
-    public Ocorrencia getOcorrencia()                    { return ocorrencia; }
-
+    public String getNumeroBO() {
+        return numeroBO;
+    }
     
-    //  Encerrar Detencao
+    public void setNomeDoDetido(String n){
+        this.nomeDoDetido = n; 
+    }
+
+    public String getMotivoDaDetencao(){
+        return motivoDaDetencao; 
+    }
+    public void setMotivoDaDetencao(String m){
+        this.motivoDaDetencao = m;
+    }
+
+    public String getLocalDaDetencao() {
+        return LocalDaDetencao;
+    }
+    public void setLocalDaDetencao(String l) {
+        this.LocalDaDetencao = l;
+    }
+
+    public String getAgenteResponsavel(){
+        return agenteResponsavel; 
+    }
+    public void setAgenteResponsavel(String a) {
+        this.agenteResponsavel = a; 
+    }
+
+    public StatusDetencao getStatus(){
+        return status; 
+    }
+    public void setStatus(StatusDetencao s){ 
+        this.status = s;
+    }
+
+    public String getDesfecho() { 
+        return desfecho; 
+    }  
+    public void setDesfecho(String d){
+        this.desfecho = d; 
+    } 
+
+    public Ocorrencia getOcorrencia(){ 
+        return ocorrencia;
+    }
+
+
 
     public void encerrarDetencao(StatusDetencao novoStatus, String desfecho) {
         this.horaDoFimDaDetencao = LocalDateTime.now();
-        this.status              = StatusDetencao.LIBERTADO;
-        this.desfecho            = desfecho;      // â† regista o desfecho
+        this.status  = StatusDetencao.LIBERTADO;
+        this.desfecho = desfecho;     
     }
 
   
     public void encerrarDetencao(StatusDetencao novoStatus) {
         this.horaDoFimDaDetencao = LocalDateTime.now();
-        this.status              = StatusDetencao.LIBERTADO;
-        this.desfecho            = "Nao especificado";
+        this.status = StatusDetencao.LIBERTADO;
+        this.desfecho = "Nao especificado";
     }
 
-    //  Limite legal das 48 horas
+  
     public LocalDateTime getLimiteLegal() {
         return dataDeDetencao.plusHours(48);
     }
@@ -141,7 +173,6 @@ public class Detencao implements Serializable {
     }
 
    
-    //  Mostrar dados no terminal
     public void mostrarDados() {
         System.out.println("data limite: "       + getLimiteLegal());
         System.out.println("data do fim: "       + this.horaDoFimDaDetencao);
@@ -150,24 +181,21 @@ public class Detencao implements Serializable {
         System.out.println("desfecho: "          + this.desfecho);
     }
 
-    
-    // // Gerar ID da detencao
+
     public String gerarIDDetencao() {
         int anoAtual = Year.now().getValue();
         contador++;
         return String.valueOf(contador) +"/"+ anoAtual;
     }
 
-   
-    //  Dados do BO associado
-    
+
     public String dadosDoBO(Ocorrencia ocorrencia) {
         return "OCORRENCIA NUMERO: " + ocorrencia.getNumeroBO()      + '\n'
              + "LOCAL DA OCORRENCIA: " + ocorrencia.getLocalOcorrencia() + '\n'
              + "HORA DA OCORRENCIA: "  + ocorrencia.getDataHora();
     }
 
-    // Resumo da Detencao
+
     public String DadosDetencaoEncerada(Detencao detencao) {
         return "ID DA DETENCAO: "                   + detencao.getIdDetencao()          + '\n'
              + "OFICIAL RESPONSAVEL: "              + detencao.getAgenteResponsavel()   + '\n'

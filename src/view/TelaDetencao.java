@@ -330,9 +330,9 @@ public class TelaDetencao extends JFrame {
         return b;
     }
 
-    public static void main(String[] args) {
+   /* public static void main(String[] args) {
         SwingUtilities.invokeLater(TelaDetencao::new);
-    }
+    }*/
     
     public DetencaoDto dadosDetencao (){
         return new DetencaoDto (campoAgente.getText(), campoNumeroBO.getText());
@@ -419,12 +419,11 @@ public class TelaDetencao extends JFrame {
         modeloTabela.addRow(new Object[]{
             d.getIdDetencao(),
             d.getAgenteResponsavel(),
+            d.getNumeroBO(),
             d.getNomeDoDetido() != null ? d.getNomeDoDetido() : "-",
             d.getDataDeDetencao() != null ? d.getDataDeDetencao().format(fmt) : "-",
             d.getLimiteLegal() != null ? d.getLimiteLegal().format(fmt) : "-",
             d.getStatus()
         });
     }
-
-
 }

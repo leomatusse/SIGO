@@ -26,6 +26,6 @@ public class CrimeDto {
         this.tipoDeCrime = tipoCrime;
         this.estadoDeFlagrancia = estadoD;
         
-    }
-   
+    }  
+    
 }

@@ -39,7 +39,6 @@ public class ControllerTrabalho {
     public ControllerTrabalho (MenuPrincipal viewMenu,  Ficheiros ficheiro){
         this.viewMenu = viewMenu;
         this.ficheiro = ficheiro;
-       // viewMenu.abrirMenu();
        viewMenu.setEntradaSistema(() ->{
            configurarEventos();
        });
@@ -54,20 +53,20 @@ public class ControllerTrabalho {
             ex.printStackTrace();
         }
         viewMenu.getBtnOcorrencia().addActionListener(e ->{
-          viewOcorrencias = new TelaOcorrencia();
+        viewOcorrencias = new TelaOcorrencia();
           
-          eventosOcorrencia (viewOcorrencias);
-          viewOcorrencias.setVisible(true);
-          
+        eventosOcorrencia (viewOcorrencias);
+        viewOcorrencias.setVisible(true); 
+        });
         
-        });
         viewMenu.getBtnDetencao().addActionListener(e ->{
-          viewDetencao = new TelaDetencao();
-          eventosDetencao (viewDetencao);
-          viewDetencao.setVisible(true);
+        viewDetencao = new TelaDetencao();
+        eventosDetencao (viewDetencao);
+        viewDetencao.setVisible(true);
+          
         });
-       viewMenu.getBtnSair().addActionListener(e -> {
-           System.exit(0);
+        viewMenu.getBtnSair().addActionListener(e -> {
+        System.exit(0);
        });
      
     }
@@ -114,26 +113,26 @@ public class ControllerTrabalho {
     public void encerrarDetencao () throws FileNotFoundException{
         if (viewDetencao.getIDDetencao().isEmpty()){
               JOptionPane.showMessageDialog(null,
-                "Insira o ID da detencaoo.", "Aviso",
+                "INSIRA O ID DA DETENCAO.", "AVISO",
                 JOptionPane.WARNING_MESSAGE);
               return;
         }
         if (viewDetencao.getIndexDesfecho ()==0){
             JOptionPane.showMessageDialog(null,
-                "Seleccione o desfecho da detencao.", "Aviso",
+                "SELECCIONE O DESFECHO DA DETENCAO.", "AVISO",
                 JOptionPane.WARNING_MESSAGE);
             return;
         }
         String desfecho = viewDetencao.getDesfecho();
-         int conf = JOptionPane.showConfirmDialog(null,
-        "Confirma o encerramento? ID: " + viewDetencao.getIDDetencao() + "\nDesfecho: " + desfecho,
-        "Confirmar Encerramento", JOptionPane.YES_NO_OPTION);
+        int conf = JOptionPane.showConfirmDialog(null,
+        "CONFIRMA ENCERRAMENTO? ID: " + viewDetencao.getIDDetencao() + "DESFECHO: " + desfecho,
+        "CONFIRMAR ENCERRAMENTO", JOptionPane.YES_NO_OPTION);
          
          if (conf == JOptionPane.YES_OPTION){
             ficheiro.readDetencao();
             Detencao detencao = ficheiro.procurarDetencao(viewDetencao.getIDDetencao());
             if (detencao == null){
-                JOptionPane.showMessageDialog(null, "ID DE DETENCAO NAO ENCONTRADO.", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "ID DE DETENCAO NAO ENCONTRADO.", "ERRO", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
@@ -141,7 +140,7 @@ public class ControllerTrabalho {
             ficheiro.saveDetencao(ficheiro.getDetencoes());
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             String horaEncerramento = LocalDateTime.now().format(fmt);
-            JOptionPane.showMessageDialog(null,"Detencao encerrada!\nID: " + viewDetencao.getIDDetencao() +"\nDesfecho: " + desfecho + "\nEncerrada em: " + horaEncerramento);
+            JOptionPane.showMessageDialog(null,"DETENCAO ENCERRADA! ID: " + viewDetencao.getIDDetencao() +"DESFECHO: " + desfecho + "ENCERRADA EM: " + horaEncerramento);
             viewDetencao.limparCamposDetencao();
          }
     }
@@ -158,7 +157,7 @@ public class ControllerTrabalho {
         });
         
         telaOcorrencia.getBtnFechar().addActionListener(e -> {
-            if (JOptionPane.showConfirmDialog(null, "DESEJA SAIR?", "Sair", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+            if (JOptionPane.showConfirmDialog(null, "DESEJA SAIR?", "SAIR", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
                 telaOcorrencia.dispose();
         });
     }
@@ -170,11 +169,11 @@ public class ControllerTrabalho {
     public void registarOcorrencia(){
         OcorrenciaDto ocorrenciaDto = viewOcorrencias.recolherDadosOcorrencia();
           if (ocorrenciaDto.localOcorrencia.trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Insira o local da ocorrencia.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "INSIRA O LOCAL DA OCORRENCIA", "AVISO", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (ocorrenciaDto.nomeOficial.trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Insira o nome do oficial.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "INSIRA O NOME DO OFICIAL.", "AVISO", JOptionPane.WARNING_MESSAGE);
             return;
         }
         Ocorrencia ocorrencia = new Ocorrencia(ocorrenciaDto.localOcorrencia, ocorrenciaDto.nomeOficial);
@@ -186,10 +185,10 @@ public class ControllerTrabalho {
             CivilDto civilDto = viewOcorrencias.recolherDadosCivil();
           
             boolean existe = false;
-          String idBI = viewOcorrencias.pedirNumeroBI();
+            String idBI = viewOcorrencias.pedirNumeroBI();
 
             if (idBI.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "Insira o numero do BI.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "INSIRA O NUMERO DE  BI.", "AVISO", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
@@ -202,7 +201,7 @@ public class ControllerTrabalho {
             }
 
             if (biDuplicado) {
-                JOptionPane.showMessageDialog(null, "BI JA EXISTE.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(null, "BI JA EXISTE.", "AVISO", JOptionPane.WARNING_MESSAGE);
                 viewOcorrencias.limparCampoBI();
                 return;
             }
@@ -216,7 +215,7 @@ public class ControllerTrabalho {
 
             if (dataNascimento == null) {
                 JOptionPane.showMessageDialog(null, 
-                    "Seleccione a data de nascimento.", "Aviso", 
+                    "SELECCIONE A DATA DE NASCIMENTO", "AVISO", 
                     JOptionPane.WARNING_MESSAGE);
                 return; // utilizador corrige e clica Guardar novamente
             }
@@ -224,8 +223,8 @@ public class ControllerTrabalho {
        
             if (civilDto.papel == papelCivil.SUSPEITO && !Civil.validarAnos(dataNascimento)) {
                 JOptionPane.showMessageDialog(null, 
-                    "Suspeito menor de idade. Nao pode ser registado como suspeito.", 
-                    "Aviso", JOptionPane.WARNING_MESSAGE);
+                    "SUSPEITO MENOR DE IDADE. NAO PODE SER REGISTADO COMO SUSPEITO", 
+                    "AVISO", JOptionPane.WARNING_MESSAGE);
                 viewOcorrencias.limparCampoDataNasc();
                 return;
             }
@@ -237,15 +236,44 @@ public class ControllerTrabalho {
             viewOcorrencias.limparCampoDataNasc();
             
             resposta = viewOcorrencias.perguntarDecisao();
+            if (resposta == JOptionPane.NO_OPTION) {
+            boolean temSuspeito = false;
+            for (Civil c : ocorrencia.getEnvolvidos()) {
+                if (c.getPapel() == papelCivil.SUSPEITO) {
+                    temSuspeito = true;
+                    break;
+                }
+            }
+            if (!temSuspeito) {
+                int resposta2 = JOptionPane.showConfirmDialog(null,
+                    "NENHUM SUSPEITO REGISTADO. TEM ALGUM SUSPEITO PARA REGISTAR?",
+                    "AVISO", JOptionPane.YES_NO_OPTION);
+                if (resposta2 == JOptionPane.YES_OPTION) {
+                    resposta = JOptionPane.YES_OPTION; 
+                }
+            }
+        }
             
         }while (resposta== JOptionPane.YES_OPTION);
         
         viewOcorrencias.setLblBO(ocorrencia.getNumeroBO());
         viewOcorrencias.setLblData(  ocorrencia.getDataHora());
-      
+     /*   ArrayList <String> suspeitos = new ArrayList<>();
+        for (Civil civil: ocorrencia.getEnvolvidos()){
+            if (civil.getPapel()== papelCivil.SUSPEITO){
+                suspeitos.add(civil.getNome()+ " - "+ civil.getBI());
+            }
+        }
+        viewOcorrencias.preencherAutoresCrime(suspeitos);
+        */
         CrimeDto crimeDto = viewOcorrencias.recolherDadosCrime();
+       /* if (viewOcorrencias.getIndexAutorCrime() == 0){
+            JOptionPane.showMessageDialog(null, "SELECCIONE O AUTOR DO CRIME.", "AVISO", JOptionPane.WARNING_MESSAGE
+            );
+            return;
+        }*/
         if (crimeDto.dataDoCrime == null){
-            JOptionPane.showMessageDialog(null, "Seleccione a data do crime.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "SELECCIONE A DATA DO CRIME.", "AVISO", JOptionPane.WARNING_MESSAGE);
             return; 
         }
         ocorrencia.getCrimes().add(new Crime (crimeDto.localDoCrime, crimeDto.dataDoCrime, crimeDto.armaDoCrime, crimeDto.estadoDeFlagrancia, crimeDto.tipoDeCrime));
@@ -258,17 +286,19 @@ public class ControllerTrabalho {
     
     
     public void cadastrarDetencao () throws ClassNotFoundException, FileNotFoundException{
-  
+         DetencaoDto detencaoDto = new DetencaoDto ();
+          Detencao detencao = new Detencao() ;
+     
         boolean existe = false;
    
-        DetencaoDto detencaoDto = viewDetencao.dadosDetencao();
+        detencaoDto = viewDetencao.dadosDetencao();
      //   Detencao detencao = new Detencao (detencaoDto.agenteResponsavel);
         if (detencaoDto.agenteResponsavel.trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Insira o nome do Agente Responsavel.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "INSIRA O NOME DO AGENTE RESPONSAVEL.", "AVISO", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (detencaoDto.numeroBO.trim().isEmpty()){
-            JOptionPane.showMessageDialog(null, "Insira o numero do BO.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "INSIRA O NUMERO DE BO.", "AVISO", JOptionPane.WARNING_MESSAGE);
             return;
         }
         ficheiro.readOcorrencia();
@@ -281,16 +311,24 @@ public class ControllerTrabalho {
         }
         if (!existe) JOptionPane.showMessageDialog(null, "NUMERO DE BO NAO ENCONTRADO");
         else { 
-            Detencao detencao = new Detencao (detencaoDto.agenteResponsavel, detencaoDto.numeroBO);
-          //  JOptionPane.showMessageDialog(null, "NUMERO DE BO ENCONTRADO");  
-            detencao.setIdDetencao(detencao.gerarIDDetencao(ficheiro.proximoIDDetencao()));
-            
+            detencao = new Detencao (detencaoDto.agenteResponsavel, detencaoDto.numeroBO);
             Ocorrencia associadaOcorrencia = ficheiro.procurarBO(detencaoDto.numeroBO);
+
             if (associadaOcorrencia != null) {
                 String nomeDoDetido = associadaOcorrencia.procurarSuspeito();
-                detencao.setNomeDoDetido(nomeDoDetido != null ? nomeDoDetido : "NAO IDENTIFICADO");
-                associadaOcorrencia.iniciarDetencao(detencao);
-            }
+
+          // Verificar se tem suspeito
+                if (nomeDoDetido == null) {
+                    JOptionPane.showMessageDialog(null,"Esta ocorrencia nao tem suspeito registado.\nNao e possivel efectuar uma detencao.","Aviso", JOptionPane.WARNING_MESSAGE);
+              return;
+          }
+
+          detencao.setNomeDoDetido(nomeDoDetido);
+          associadaOcorrencia.iniciarDetencao(detencao);
+      }
+            detencao.setIdDetencao(detencao.gerarIDDetencao(ficheiro.proximoIDDetencao()));
+            
+       
             viewDetencao.setLblID(detencao.getIdDetencao());
             viewDetencao.setLblHora(detencao.getDataDeDetencao());
             viewDetencao.setLblLimite(detencao.getLimiteLegal());
@@ -308,18 +346,18 @@ public class ControllerTrabalho {
         viewDetencao.preencherTabela(ficheiro.getDetencoes());
         viewDetencao.mostrarAlertas(ficheiro.getDetencoes());
     } catch (Exception ex) {
-        JOptionPane.showMessageDialog(null, "Erro ao carregar detencoes: " + ex.getMessage());
+        JOptionPane.showMessageDialog(null, "ERRO AO CARREGAR DETENCOES: " + ex.getMessage());
     }
 }
 
     public void pesquisarDetencao() {
         String id = viewDetencao.getCampoPesquisa();
         if (id.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Insira um ID para pesquisar.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "INSIRA UM ID PARA PESQUISAR.", "AVISO", JOptionPane.WARNING_MESSAGE);
             return;
         }
         if (!id.matches("\\d+/\\d{4}")){
-            JOptionPane.showMessageDialog(null, "Formato invalido.", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(null, "FORMATO INVALIDO.", "AVISO", JOptionPane.WARNING_MESSAGE);
             return;
         }
         ficheiro.readDetencao(); 
@@ -331,7 +369,7 @@ public class ControllerTrabalho {
           ficheiro.readOcorrencia();
           viewOcorrencias.preencherTabelaOcorrencias(ficheiro.getOcorrencias());
       } catch (Exception ex) {
-          JOptionPane.showMessageDialog(null, "Erro ao carregar ocorrencias: " + ex.getMessage());
+          JOptionPane.showMessageDialog(null, "ERRO AO CARREGAR OCORRENCIAS: " + ex.getMessage());
       }
   }
 }

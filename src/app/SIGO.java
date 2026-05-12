@@ -7,7 +7,6 @@ package app;
 import controller.ControllerTrabalho;
 import model.Ficheiros;
 import view.MenuPrincipal;
-import view.TelaOcorrencia;
 
 /**
  *
@@ -15,7 +14,7 @@ import view.TelaOcorrencia;
  */
 public class SIGO {
     public static void main(String[] args) {
-         Ficheiros ficheiro = new Ficheiros ();
+        Ficheiros ficheiro = new Ficheiros ();
         MenuPrincipal menu = new MenuPrincipal ();
    
         ControllerTrabalho controller = new ControllerTrabalho (menu, ficheiro);

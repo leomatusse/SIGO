@@ -57,7 +57,7 @@ public class TelaOcorrencia extends JFrame {
     private JTextField campoArmaCrime;
     private JTextField campoTipoCrime;
     private JComboBox<EstadoFlagrancia> campoFlagrancia = new JComboBox <>(EstadoFlagrancia.values());
-
+   // private JComboBox<String> campoAutorCrime;
     // Cores
     private static final Color COR_AZUL    = new Color(10, 20, 70);
     private static final Color COR_FUNDO   = new Color(235, 235, 240);
@@ -239,13 +239,15 @@ public class TelaOcorrencia extends JFrame {
 
 
         campoFlagrancia.setFont(new Font("SansSerif", Font.PLAIN, 13));
-
+   //   campoAutorCrime = new JComboBox <>();
+  //    campoAutorCrime.setFont(new Font("SansSerif", Font.PLAIN, 13));
+    //    campoAutorCrime.addItem("Selecionar autor..."); 
         adicionarCampo(p, g, "Local do Crime:",    campoLocalCrime, 0);
         adicionarCampo(p, g, "Data do Crime:",     campoDataCrime,  1);
         adicionarCampo(p, g, "Arma do Crime:",     campoArmaCrime,  2);
         adicionarCampo(p, g, "Tipo de Crime:",     campoTipoCrime,  3);
         adicionarCampo(p, g, "Estado Flagrancia:", campoFlagrancia, 4);
-
+   //     adicionarCampo(p, g, "Autor do Crime:", campoAutorCrime, 5);
         return p;
     }
 
@@ -300,6 +302,7 @@ public class TelaOcorrencia extends JFrame {
         campoPapel.setSelectedIndex(0);
         campoSexo.setSelectedIndex(0);
         campoFlagrancia.setSelectedIndex(0);
+     //   campoAutorCrime.setSelectedIndex(0);
     }
 
     //  Auxiliares 
@@ -360,7 +363,9 @@ public class TelaOcorrencia extends JFrame {
     }
 
     public CrimeDto recolherDadosCrime (){
-        return new CrimeDto (campoLocalCrime.getText(), pedirDataCrime(), campoArmaCrime.getText(),(EstadoFlagrancia) campoFlagrancia.getSelectedItem(), campoTipoCrime.getText());
+        CrimeDto dto = new CrimeDto (campoLocalCrime.getText(), pedirDataCrime(), campoArmaCrime.getText(),(EstadoFlagrancia) campoFlagrancia.getSelectedItem(), campoTipoCrime.getText());
+     //   dto.autorDoCrime = getAutorCrime();
+        return dto;
     }
     
     public String pedirNumeroBI (){
@@ -383,10 +388,7 @@ public class TelaOcorrencia extends JFrame {
     public int fecharDecisao(){
         return JOptionPane.showConfirmDialog(this,"DESEJA SAIR?");
     }
-   /* public static void main(String[] args) {
-        SwingUtilities.invokeLater(TelaOcorrencia::new);
-    }
-*/
+
     public void setLblBO(String numeroBO) {
         this.lblBO.setText(numeroBO);
     }
@@ -418,6 +420,22 @@ public class TelaOcorrencia extends JFrame {
         if (data == null) return null;
         return data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
+   /* public void preencherAutoresCrime (ArrayList <String> suspeitos){
+        campoAutorCrime.removeAllItems();
+        campoAutorCrime.addItem("Seleccionar autor.");
+        for (String suspeito: suspeitos){
+            campoAutorCrime.addItem(suspeito);
+            
+        }
+    }
+    
+   /* public String getAutorCrime (){
+        return (String) campoAutorCrime.getSelectedItem();
+    }
+    
+    public int getIndexAutorCrime (){
+        return campoAutorCrime.getSelectedIndex();
+    }*/
 }
 
 
