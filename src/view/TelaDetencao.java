@@ -9,9 +9,13 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
+import model.Civil;
 import model.Detencao;
+import model.Ficheiros;
+import model.Ocorrencia;
 
 public class TelaDetencao extends JFrame {
+    private Ficheiros ficheiro;
     private JLabel lblAlerta;
     private JButton btnActualizar;
     private JButton btnPesquisar;
@@ -38,6 +42,7 @@ public class TelaDetencao extends JFrame {
     private static final Color COR_VERM   = new Color(160, 20, 20);
 
     public TelaDetencao() {
+        ficheiro = new Ficheiros();
         setTitle("PRM : Gestao de Detencoes");
         setSize(680, 560);
         setLocationRelativeTo(null);
@@ -106,7 +111,7 @@ public class TelaDetencao extends JFrame {
         p.add(painelPesquisa, BorderLayout.NORTH);
 
     
-        String[] colunas = {"ID", "Agente", "Nº BO", "Detido", "Data", "Limite 48h", "Status"};
+        String[] colunas = {"ID", "Agente", "Detido","Nº BO", "Data", "Limite 48h", "Status"};
         modeloTabela = new DefaultTableModel(colunas, 0) {
             public boolean isCellEditable(int row, int col) { return false; }
         };
@@ -117,6 +122,14 @@ public class TelaDetencao extends JFrame {
         tabelaDetencoes.getTableHeader().setBackground(COR_AZUL);
         tabelaDetencoes.getTableHeader().setForeground(COR_BRANCO);
         JScrollPane scroll = new JScrollPane(tabelaDetencoes);
+        tabelaDetencoes.getColumnModel().getColumn(0).setPreferredWidth(75);
+        tabelaDetencoes.getColumnModel().getColumn(1).setPreferredWidth(120);
+        tabelaDetencoes.getColumnModel().getColumn(2).setPreferredWidth(120);
+        tabelaDetencoes.getColumnModel().getColumn(3).setPreferredWidth(75);
+        tabelaDetencoes.getColumnModel().getColumn(4).setPreferredWidth(75);
+        tabelaDetencoes.getColumnModel().getColumn(5).setPreferredWidth(75);
+        tabelaDetencoes.getColumnModel().getColumn(6).setPreferredWidth(75);
+
         p.add(scroll, BorderLayout.CENTER);
 
    
@@ -133,6 +146,11 @@ public class TelaDetencao extends JFrame {
     }
     
     private JPanel criarAbaRegistar() {
+          try {
+                ficheiro.readOcorrencia();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
         JPanel p = new JPanel(new GridBagLayout());
         p.setBackground(COR_FUNDO);
         p.setBorder(BorderFactory.createEmptyBorder(25, 40, 25, 40));
@@ -177,13 +195,39 @@ public class TelaDetencao extends JFrame {
         g.insets = new Insets(20, 5, 5, 5);
         btnRegistar = botao("Registar Detencao", COR_VERDE);
         btnRegistar.addActionListener((ActionEvent e) -> {
-            if (campoNumeroBO.getText().trim().isEmpty() ||
-                    campoAgente.getText().trim().isEmpty()) {
+            String numeroBO = campoNumeroBO.getText().trim();
+            String agente   = campoAgente.getText().trim();
+
+
+            if (numeroBO.trim().isEmpty() ||
+                    agente.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(TelaDetencao.this, "Preencha todos os campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
-            } else {
+                return;
+            } 
           
+                Ocorrencia ocorrencia = ficheiro.procurarBO(numeroBO);
+                
+                if (!ocorrencia.temSuspeito()){
+                 JOptionPane.showMessageDialog(
+                    TelaDetencao.this,"Esta ocorrência não possui suspeitos.");
+                    return;
+    
+                }
+                String idSuspeito = JOptionPane.showInputDialog (TelaDetencao.this, "DIGITE O ID DO SUSPEITO: ");
+                if (idSuspeito == null || idSuspeito.trim().isEmpty()){
+                      JOptionPane.showMessageDialog(TelaDetencao.this,"ID DO SUSPEITO E OBRIGATORIO.");
+                      return;
+
+                }
+               Civil suspeito = ocorrencia.procurarSuspeitoPorId(idSuspeito);
+               if (suspeito == null){
+                 JOptionPane.showMessageDialog(
+                    TelaDetencao.this,"SUSPEITO NAO ENCONTRADO.");
+                    return;
+               }
+               
                 dadosDetencao();
-            }
+            
         });
         p.add(btnRegistar, g);
 
@@ -402,9 +446,10 @@ public class TelaDetencao extends JFrame {
                 d.getIdDetencao(),
                 d.getAgenteResponsavel(),
                 d.getNomeDoDetido() != null ? d.getNomeDoDetido() : "-",
+                d.getNumeroBO(),
                 d.getDataDeDetencao() != null ? d.getDataDeDetencao().format(fmt) : "-",
                 d.getLimiteLegal() != null ? d.getLimiteLegal().format(fmt) : "-",
-                d.getStatus()
+                d.getStatus() != null ? d.getStatus().toString(): "-"
             });
         }
     }
@@ -419,11 +464,11 @@ public class TelaDetencao extends JFrame {
         modeloTabela.addRow(new Object[]{
             d.getIdDetencao(),
             d.getAgenteResponsavel(),
+            d.getNomeDoDetido() != null ? d.getNomeDoDetido() : "-", 
             d.getNumeroBO(),
-            d.getNomeDoDetido() != null ? d.getNomeDoDetido() : "-",
             d.getDataDeDetencao() != null ? d.getDataDeDetencao().format(fmt) : "-",
             d.getLimiteLegal() != null ? d.getLimiteLegal().format(fmt) : "-",
-            d.getStatus()
+            d.getStatus() != null ? d.getStatus().toString(): "-"
         });
     }
 }

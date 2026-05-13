@@ -139,5 +139,20 @@ public class Ocorrencia implements Serializable {
     public void setNumeroBO(String numeroBO) {
         this.numeroBO = numeroBO;
     }
-   
+   public boolean temSuspeito (){
+       for (Civil civil: envolvidos){
+           if (civil.getPapel() == Civil.papelCivil.SUSPEITO){
+               return true;
+           }
+       }
+       return false;
+   }
+   public Civil procurarSuspeitoPorId( String id){
+       for (Civil civil : envolvidos){
+           if (civil.getPapel() == Civil.papelCivil.SUSPEITO && civil.getIdSuspeito() != null && civil.getIdSuspeito().equals(id)){
+               return civil;
+           }
+       }
+       return null;
+   }
 }

@@ -25,7 +25,7 @@ public class Civil implements Serializable {
       TESTEMUNHA
     }
     
-
+    private String idSuspeito;
     private String nome, idBI, sexo,contacto, dataNascimento, nacionalidade, endereco, estadoCivil;
     private papelCivil papel;
    
@@ -202,4 +202,14 @@ public class Civil implements Serializable {
          
         return false;
     }
+
+    public String getIdSuspeito() {
+        return idSuspeito;
+    }
+
+    public void setIdSuspeito(String idSuspeito) {
+        this.idSuspeito = idSuspeito;
+    }
+    
+    
 }
