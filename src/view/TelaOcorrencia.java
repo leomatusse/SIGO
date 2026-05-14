@@ -113,7 +113,7 @@ public class TelaOcorrencia extends JFrame {
         p.setBackground(COR_FUNDO);
         p.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
 
-        String[] colunas = {"Nº BO","Suspeitos", "Local", "Oficial", "Data/Hora", "Estado"};
+        String[] colunas = {"Nº BO","Suspeitos","Vitimas","Testemunha", "Local", "Oficial", "Data/Hora", "Estado"};
         modeloTabelaOcorrencia = new DefaultTableModel(colunas, 0) {
             public boolean isCellEditable(int r, int c) { return false; }
         };
@@ -127,10 +127,12 @@ public class TelaOcorrencia extends JFrame {
         tabelaOcorrencias.getColumnModel().getColumn(0).setPreferredWidth(75);
         tabelaOcorrencias.getColumnModel().getColumn(1).setPreferredWidth(130);
         tabelaOcorrencias.getColumnModel().getColumn(2).setPreferredWidth(125);
-        tabelaOcorrencias.getColumnModel().getColumn(3).setPreferredWidth(75);
+        tabelaOcorrencias.getColumnModel().getColumn(3).setPreferredWidth(125);
         tabelaOcorrencias.getColumnModel().getColumn(4).setPreferredWidth(125);
         tabelaOcorrencias.getColumnModel().getColumn(5).setPreferredWidth(125);
-      
+        tabelaOcorrencias.getColumnModel().getColumn(6).setPreferredWidth(75);
+        tabelaOcorrencias.getColumnModel().getColumn(7).setPreferredWidth(125);
+        
         btnActualizarOcorrencias = botao("Actualizar Lista", COR_VERDE);
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
         painelBotoes.setOpaque(false);
@@ -250,15 +252,11 @@ public class TelaOcorrencia extends JFrame {
 
 
         campoFlagrancia.setFont(new Font("SansSerif", Font.PLAIN, 13));
-   //   campoAutorCrime = new JComboBox <>();
-  //    campoAutorCrime.setFont(new Font("SansSerif", Font.PLAIN, 13));
-    //    campoAutorCrime.addItem("Selecionar autor..."); 
         adicionarCampo(p, g, "Local do Crime:",    campoLocalCrime, 0);
         adicionarCampo(p, g, "Data do Crime:",     campoDataCrime,  1);
         adicionarCampo(p, g, "Arma do Crime:",     campoArmaCrime,  2);
         adicionarCampo(p, g, "Tipo de Crime:",     campoTipoCrime,  3);
         adicionarCampo(p, g, "Estado Flagrancia:", campoFlagrancia, 4);
-   //     adicionarCampo(p, g, "Autor do Crime:", campoAutorCrime, 5);
         return p;
     }
 
@@ -313,10 +311,10 @@ public class TelaOcorrencia extends JFrame {
         campoPapel.setSelectedIndex(0);
         campoSexo.setSelectedIndex(0);
         campoFlagrancia.setSelectedIndex(0);
-     //   campoAutorCrime.setSelectedIndex(0);
+
     }
 
-    //  Auxiliares 
+    
     private void adicionarCampo(JPanel p, GridBagConstraints g,
                                  String label, JComponent campo, int linha) {
         g.gridx = 0; g.gridy = linha; g.weightx = 0;
@@ -375,7 +373,7 @@ public class TelaOcorrencia extends JFrame {
 
     public CrimeDto recolherDadosCrime (){
         CrimeDto dto = new CrimeDto (campoLocalCrime.getText(), pedirDataCrime(), campoArmaCrime.getText(),(EstadoFlagrancia) campoFlagrancia.getSelectedItem(), campoTipoCrime.getText());
-     //   dto.autorDoCrime = getAutorCrime();
+    
         return dto;
     }
     
@@ -425,29 +423,58 @@ public class TelaOcorrencia extends JFrame {
                     suspeitos.add(civil);
                 }
             }
+            
+            ArrayList <Civil> vitimas = new ArrayList <>();
+            for (Civil civil : oc.getEnvolvidos()){
+                if (civil.getPapel() == Civil.papelCivil.VITIMA){
+                    vitimas.add(civil);
+                }
+            }
+            
+            ArrayList <Civil> testemunhas = new ArrayList<>();
+            for (Civil civil : oc.getEnvolvidos()){
+                if (civil.getPapel() == Civil.papelCivil.TESTEMUNHA){
+                    testemunhas.add(civil);
+                }
+                
+            }
+            
+            
 
             if (suspeitos.isEmpty()) {
-                 // Sem suspeitos  uma linha só com a ocorrencia
-                modeloTabelaOcorrencia.addRow(new Object[]{
-                    oc.getNumeroBO(),
-                    "Desconhecido",
-                    oc.getLocalOcorrencia(),
-                    oc.getNomeOficial(),
-                    oc.getDataHora() != null ? oc.getDataHora().format(fmt) : "-",
-                    oc.getEstadoBO()
-                });
-            } else {
-                // Uma linha por suspeito
-                for (Civil suspeito : suspeitos) {
-                    modeloTabelaOcorrencia.addRow(new Object[]{
-                        oc.getNumeroBO(),
-                        suspeito.getIdSuspeito() + " - " + suspeito.getNome(),
-                        oc.getLocalOcorrencia(),
-                        oc.getNomeOficial(),
-                        oc.getDataHora() != null ? oc.getDataHora().format(fmt) : "-",
-                        oc.getEstadoBO()
-                    });
+                for (Civil vitima: vitimas){ 
+                    for (Civil testemunha: testemunhas){
+                        modeloTabelaOcorrencia.addRow(new Object[]{
+                            oc.getNumeroBO(),
+                            "Desconhecido",
+                            vitima.getNome(),
+                            testemunha.getNome(),
+                            oc.getLocalOcorrencia(),
+                            oc.getNomeOficial(),
+                            oc.getDataHora() != null ? oc.getDataHora().format(fmt) : "-",
+                            oc.getEstadoBO()
+                        });
+                    }
                 }
+            } else {
+               
+                for (Civil suspeito : suspeitos) {
+                    for (Civil vitima: vitimas){
+                        for (Civil testemunha: testemunhas){
+                            modeloTabelaOcorrencia.addRow(new Object[]{
+                                oc.getNumeroBO(),
+                                suspeito.getIdSuspeito() + " - " + suspeito.getNome(),
+                                vitima.getNome(),
+                                testemunha.getNome(),
+                                oc.getLocalOcorrencia(),
+                                oc.getNomeOficial(),
+                                oc.getDataHora() != null ? oc.getDataHora().format(fmt) : "-",
+                                oc.getEstadoBO()
+                            });
+                        }
+                    }
+                }
+              
             }
         }
     }
@@ -457,24 +484,6 @@ public class TelaOcorrencia extends JFrame {
         return data.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
     
-    
-   /* public void preencherAutoresCrime (ArrayList <String> suspeitos){
-        campoAutorCrime.removeAllItems();
-        campoAutorCrime.addItem("Seleccionar autor.");
-        for (String suspeito: suspeitos){
-            campoAutorCrime.addItem(suspeito);
-            
-        }
-    }
-    
-   /* public String getAutorCrime (){
-        return (String) campoAutorCrime.getSelectedItem();
-    }
-    
-    public int getIndexAutorCrime (){
-        return campoAutorCrime.getSelectedIndex();
-    }*/
-
     public JButton getBtnAdicionarCivil() {
         return btnAdicionarCivil;
     }

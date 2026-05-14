@@ -295,7 +295,7 @@ public class TelaDetencao extends JFrame {
 
         adicionarCampo(p, g, "Desfecho:", campoDesfecho, 3);
 
-        // ObservaÃ§Ãµes
+        
         g.gridx = 0; g.gridy = 4; g.weightx = 0; g.gridwidth = 1;
         p.add(rotulo("Observacoes:"), g);
 
@@ -308,7 +308,7 @@ public class TelaDetencao extends JFrame {
         g.gridx = 1; g.weightx = 1; g.gridwidth = 1;
         p.add(scroll, g);
 
-        // Painel de botÃµes
+        
         g.gridx = 0; g.gridy = 5; g.gridwidth = 2;
         g.insets = new Insets(18, 5, 5, 5);
         JPanel painelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 0));
@@ -373,10 +373,6 @@ public class TelaDetencao extends JFrame {
         b.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return b;
     }
-
-   /* public static void main(String[] args) {
-        SwingUtilities.invokeLater(TelaDetencao::new);
-    }*/
     
     public DetencaoDto dadosDetencao (){
         return new DetencaoDto (campoAgente.getText(), campoNumeroBO.getText());

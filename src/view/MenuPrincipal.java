@@ -21,8 +21,7 @@ public class MenuPrincipal extends JFrame {
     private JButton btnOcorrencia;
     private JButton btnDetencao;
     private JButton btnSair;
-    //  Esquerda: imagem (coloca em imagens/fundo.jpg)
-    //  Direita:  cinza claro
+
     
     private JPanel criarFundo() {
         return new JPanel() {
@@ -52,10 +51,10 @@ public class MenuPrincipal extends JFrame {
 
                
                 if (img != null) {
-                    // Imagem real
+                  
                     g2.drawImage(img, 0, 0, metade, getHeight(), this);
                 } else {
-                    // Gradiente como alternativa
+                    
                     GradientPaint gp = new GradientPaint(
                         0, 0, new Color(5, 15, 60),
                         metade, getHeight(), new Color(0, 80, 40));
@@ -63,7 +62,7 @@ public class MenuPrincipal extends JFrame {
                     g2.fillRect(0, 0, metade, getHeight());
                 }
 
-                // Camada escura sobre a imagem
+                
                 g2.setColor(new Color(0, 0, 0, 90));
                 g2.fillRect(0, 0, metade, getHeight());
 
@@ -71,15 +70,12 @@ public class MenuPrincipal extends JFrame {
                 g2.setColor(new Color(235, 235, 235));
                 g2.fillRect(metade, 0, metade, getHeight());
 
-                // Linha dourada em baixo
+               
                 g2.setColor(new Color(200, 160, 40, 200));
                 g2.setStroke(new BasicStroke(2.5f));
                 g2.drawLine(0, getHeight() - 38, getWidth(), getHeight() - 38);
 
-                // Linha divisÃ³ria vertical
-             /*   g2.setColor(new Color(200, 160, 40, 150));
-                g2.setStroke(new BasicStroke(1.5f));
-                g2.drawLine(metade, 0, metade, getHeight());*/
+              
             }
         };
     }
@@ -272,23 +268,16 @@ public class MenuPrincipal extends JFrame {
 
         gd.gridy = 0;
         Component add;
-        btnOcorrencia = criarBotaoMenu("1", "BO");
+        btnOcorrencia = criarBotaoMenu("1-", "BO");
         direito.add(btnOcorrencia, gd);
 
         gd.gridy = 1;
-        btnDetencao = criarBotaoMenu("2", "Detencao");
+        btnDetencao = criarBotaoMenu("2-", "Detencao");
         direito.add(btnDetencao, gd);
 
-      /*  gd.gridy = 2;
-        direito.add(criarBotaoMenu("3", "Ocorrencia", e ->
-            JOptionPane.showMessageDialog(this,
-                "Modulo de Ocorrencias", "Ocorrencia",
-                JOptionPane.INFORMATION_MESSAGE)), gd);*/
-
         gd.gridy = 3;
-        btnSair =criarBotaoMenu("3", "Sair");
+        btnSair =criarBotaoMenu("3-", "Sair");
         direito.add(btnSair, gd);
-
         area.add(esquerdo);
         area.add(direito);
         return area;
@@ -425,12 +414,6 @@ public class MenuPrincipal extends JFrame {
         });
         t.start();
     }
-   
-   /* public static void main(String[] args) {
-        try { UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName()); }
-        catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ignored) {}
-        SwingUtilities.invokeLater(MenuPrincipal::new);
-    }*/
 
     public JButton getBtnOcorrencia() {
         return btnOcorrencia;
