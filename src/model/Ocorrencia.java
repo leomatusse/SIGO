@@ -27,7 +27,6 @@ public class Ocorrencia implements Serializable {
     public enum EstadoBO {
         EM_ANALISE,
         DETENCAO_ASSOCIADA,
-        EM_PROCESSO,
         ENCERRADO
     }
     private String numeroBO;

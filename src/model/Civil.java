@@ -60,11 +60,10 @@ public class Civil implements Serializable {
                 break;
             }  
         }
-     
+        this.contacto = contacto;
         if (!existeContacto){
-           this.contacto = contacto;
            listaContacto.add(contacto);
-        } else this.validarContacto = false;
+        } 
         
         this.papel = papel;
         this.dataNascimento = dataNascimento;
@@ -110,6 +109,14 @@ public class Civil implements Serializable {
         return idade > 18;
         
       
+    }
+    
+    public static boolean validarIdadeTestemunha (LocalDate dataNascimento){
+        if (dataNascimento == null) return false;
+        LocalDate hoje = LocalDate.now();
+        int idade = hoje.getYear() - dataNascimento.getYear();
+        if (dataNascimento.plusYears(idade).isAfter(hoje)) idade--;
+        return idade > 5;
     }
     
     public boolean validarIDBI(){

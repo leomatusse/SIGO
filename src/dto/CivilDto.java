@@ -22,11 +22,9 @@ public class CivilDto {
     public String enderenco;
     public String estadoCivil;  
 
-    public CivilDto(String nomeCivil, String contactoCivil, papelCivil papel, String nacionalidade, String sexo, String endereco, String estadoCivil) {
+    public CivilDto(String nomeCivil, String contacto, papelCivil papel, String nacionalidade, String sexo, String endereco, String estadoCivil) {
         this.nome = nomeCivil;
-
-        this.contacto = contactoCivil;
-  
+        this.contacto = contacto;
         this.nacionalidade = nacionalidade;
         this.sexo = sexo;
         this.enderenco = endereco;

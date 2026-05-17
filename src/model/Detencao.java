@@ -12,9 +12,6 @@ public class Detencao implements Serializable {
        
     }
 
-    public Detencao(String agenteResponsavel) {
-        this.agenteResponsavel = agenteResponsavel;
-    }
 
     public Detencao(String agenteResponsavel, String numeroBO) {
         this.agenteResponsavel = agenteResponsavel;
@@ -52,7 +49,7 @@ public class Detencao implements Serializable {
     private String agenteResponsavel;
     private StatusDetencao status;
     private String   desfecho;          
-
+    private String  idSuspeito;
     private LocalDateTime horaDoFimDaDetencao;
     private LocalDateTime dataDeDetencao;
 
@@ -212,6 +209,14 @@ public class Detencao implements Serializable {
     public String gerarIDDetencao (int contador){
       int anoAtual = Year.now().getValue();
       return contador + "/"+ anoAtual;
+    }
+
+    public String getIdSuspeito() {
+        return idSuspeito;
+    }
+
+    public void setIdSuspeito(String idSuspeito) {
+        this.idSuspeito = idSuspeito;
     }
     
     

@@ -195,39 +195,7 @@ public class TelaDetencao extends JFrame {
         g.insets = new Insets(20, 5, 5, 5);
         btnRegistar = botao("Registar Detencao", COR_VERDE);
         btnRegistar.addActionListener((ActionEvent e) -> {
-            String numeroBO = campoNumeroBO.getText().trim();
-            String agente   = campoAgente.getText().trim();
-
-
-            if (numeroBO.trim().isEmpty() ||
-                    agente.trim().isEmpty()) {
-                JOptionPane.showMessageDialog(TelaDetencao.this, "Preencha todos os campos.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                return;
-            } 
-          
-                Ocorrencia ocorrencia = ficheiro.procurarBO(numeroBO);
-                
-                if (!ocorrencia.temSuspeito()){
-                 JOptionPane.showMessageDialog(
-                    TelaDetencao.this,"Esta ocorrência não possui suspeitos.");
-                    return;
-    
-                }
-                String idSuspeito = JOptionPane.showInputDialog (TelaDetencao.this, "DIGITE O ID DO SUSPEITO: ");
-                if (idSuspeito == null || idSuspeito.trim().isEmpty()){
-                      JOptionPane.showMessageDialog(TelaDetencao.this,"ID DO SUSPEITO E OBRIGATORIO.");
-                      return;
-
-                }
-               Civil suspeito = ocorrencia.procurarSuspeitoPorId(idSuspeito);
-               if (suspeito == null){
-                 JOptionPane.showMessageDialog(
-                    TelaDetencao.this,"SUSPEITO NAO ENCONTRADO.");
-                    return;
-               }
-               
-                dadosDetencao();
-            
+   
         });
         p.add(btnRegistar, g);
 
@@ -283,14 +251,7 @@ public class TelaDetencao extends JFrame {
 
         // Muda a cor do ComboBox conforme o desfecho
         campoDesfecho.addActionListener(e -> {
-            String sel = (String) campoDesfecho.getSelectedItem();
-            if (sel != null && sel.startsWith("LIBERTADO")) {
-                campoDesfecho.setForeground(COR_VERDE);
-            } else if (sel != null && sel.startsWith("TRANSFERIDO")) {
-                campoDesfecho.setForeground(COR_VERM);
-            } else {
-                campoDesfecho.setForeground(Color.BLACK);
-            }
+           
         });
 
         adicionarCampo(p, g, "Desfecho:", campoDesfecho, 3);

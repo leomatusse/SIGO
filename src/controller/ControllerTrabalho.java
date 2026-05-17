@@ -126,6 +126,12 @@ public class ControllerTrabalho {
             return;
         }
         String desfecho = viewDetencao.getDesfecho();
+        Detencao.StatusDetencao status;
+        if (desfecho.startsWith("TRANSFERIDO")){
+            status = Detencao.StatusDetencao.PARA_PROCESSO;
+        } else {
+            status = Detencao.StatusDetencao.LIBERTADO;
+        }
         int conf = JOptionPane.showConfirmDialog(null,
         "CONFIRMA ENCERRAMENTO? ID: " + viewDetencao.getIDDetencao() + "DESFECHO: " + desfecho,
         "CONFIRMAR ENCERRAMENTO", JOptionPane.YES_NO_OPTION);
@@ -138,7 +144,7 @@ public class ControllerTrabalho {
                 return;
             }
 
-            detencao.encerrarDetencao(Detencao.StatusDetencao.LIBERTADO, viewDetencao.getDesfecho());
+            detencao.encerrarDetencao(status, desfecho);
             ficheiro.saveDetencao(ficheiro.getDetencoes());
             DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
             String horaEncerramento = LocalDateTime.now().format(fmt);
@@ -222,8 +228,8 @@ public class ControllerTrabalho {
 
 
     public void cadastrarDetencao () throws ClassNotFoundException, FileNotFoundException{
-         DetencaoDto detencaoDto = new DetencaoDto ();
-          Detencao detencao = new Detencao() ;
+        DetencaoDto detencaoDto = new DetencaoDto ();
+        Detencao detencao = new Detencao() ;
 
         boolean existe = false;
 
@@ -240,51 +246,81 @@ public class ControllerTrabalho {
         ficheiro.readOcorrencia();
         ArrayList <Ocorrencia> ocorrencias = ficheiro.getOcorrencias();
         for (Ocorrencia oc: ocorrencias){
+ 
             if (detencaoDto.numeroBO.equals(oc.getNumeroBO())){
                existe = true;
+              // oc.alterarEstado(Ocorrencia.EstadoBO.DETENCAO_ASSOCIADA);
+             //  ficheiro.saveOcorrencia(ficheiro.getOcorrencias());  
                break;
             }
         }
-        if (!existe) JOptionPane.showMessageDialog(null, "NUMERO DE BO NAO ENCONTRADO");
+        if (!existe)
+            JOptionPane.showMessageDialog(null, "NUMERO DE BO NAO ENCONTRADO");
         else { 
-            detencao = new Detencao (detencaoDto.agenteResponsavel, detencaoDto.numeroBO);
-            detencao.setIdDetencao(detencao.gerarIDDetencao(ficheiro.proximoIDDetencao()));
+
+            
 
             Ocorrencia associadaOcorrencia = ficheiro.procurarBO(detencaoDto.numeroBO);
 
             if (associadaOcorrencia != null) {
-                String nomeDoDetido = associadaOcorrencia.procurarSuspeito();// DEVO TIRAR?
-                String idSuspeito =  JOptionPane.showInputDialog(null,"Digite o ID do suspeito:");
-
-                if (idSuspeito ==  null || idSuspeito.trim().isEmpty()){
-                 JOptionPane.showMessageDialog(null,"INSIRA O ID DO SUSPEITO.","AVISO",JOptionPane.WARNING_MESSAGE);
-
-                return;
+                ArrayList <Civil> suspeitos = new ArrayList<>();
+                for (Civil civil: associadaOcorrencia.getEnvolvidos()){
+                    if (civil.getPapel() == papelCivil.SUSPEITO){
+                        suspeitos.add(civil);
+                    }
 
                 }
-                Civil suspeito = associadaOcorrencia.procurarSuspeitoPorId(idSuspeito);
-                if (suspeito == null){
-                   JOptionPane.showMessageDialog(null,"SUSPEITO NAO ENCONTRADO NESTE BO.","Aviso",JOptionPane.WARNING_MESSAGE);
-
-                return;
+                if (suspeitos.isEmpty()){
+                    JOptionPane.showMessageDialog(null, "ESTA OCORRENCIA NAO TEM SUSPEITOS. NAO PODE REALIZAR UMA DETENCAO", "AVISO", JOptionPane.WARNING_MESSAGE); 
+                    return;     
+                }
+                String [] opcoes = new String [suspeitos.size()];
+                for (int i = 0; i< suspeitos.size(); i++){
+                    opcoes[i] = suspeitos.get(i).getIdSuspeito() + "-"+ suspeitos.get(i).getNome();
 
                 }
-            detencao.setNomeDoDetido(suspeito.getNome());
-            associadaOcorrencia.iniciarDetencao(detencao);
+                String escolha = (String) JOptionPane.showInputDialog(null, "SELECIONE O SUSPEITO:", "SUSPEITOS", JOptionPane.QUESTION_MESSAGE, null, opcoes, opcoes[0]);
+                if (escolha == null) return;
+                
+                Civil suspeitoEscolhido = null;
+                for (Civil civil: suspeitos){
+                    if (escolha.startsWith(civil.getIdSuspeito())){
+                        suspeitoEscolhido = civil;
+                        break;
+                    }
+                }
+                
+                boolean detido = false;
+                ficheiro.readDetencao();
+                for (Detencao detencoes : ficheiro.getDetencoes()){
+                    if (detencoes.getIdSuspeito() != null && detencoes.getIdSuspeito().equals(suspeitoEscolhido.getIdSuspeito()) && detencoes.getStatus()== Detencao.StatusDetencao.ATIVA){
+                        detido = true;
+                        break;
+                    }
+                }
+                
+                if (detido){
+                    JOptionPane.showMessageDialog(null,"ESTE SUSPEITO JA TEM UMA DETENCAO ACTIVA.", "AVISO", JOptionPane.WARNING_MESSAGE);
+                    return;  
+                }
+                
+                detencao = new Detencao (detencaoDto.agenteResponsavel, detencaoDto.numeroBO);
+                detencao.setIdDetencao(detencao.gerarIDDetencao(ficheiro.proximoIDDetencao()));
+                detencao.setNomeDoDetido(suspeitoEscolhido.getNome());
+                detencao.setIdSuspeito(suspeitoEscolhido.getIdSuspeito());
+                associadaOcorrencia.iniciarDetencao(detencao);
+                
+                associadaOcorrencia.alterarEstado(Ocorrencia.EstadoBO.DETENCAO_ASSOCIADA);
+                ficheiro.saveOcorrencia(ficheiro.getOcorrencias());
+                viewDetencao.setLblID(detencao.getIdDetencao());
+                viewDetencao.setLblHora(detencao.getDataDeDetencao());
+                viewDetencao.setLblLimite(detencao.getLimiteLegal());
 
 
-          }
-
-
-            viewDetencao.setLblID(detencao.getIdDetencao());
-            viewDetencao.setLblHora(detencao.getDataDeDetencao());
-            viewDetencao.setLblLimite(detencao.getLimiteLegal());
-
-
-            ficheiro.adicionarDetencao(detencao);
-            ficheiro.saveDetencao(ficheiro.getDetencoes());
-            JOptionPane.showMessageDialog(null, "DETENCAO REGISTADA COM SUCESSO");  
-
+                ficheiro.adicionarDetencao(detencao);
+                ficheiro.saveDetencao(ficheiro.getDetencoes());
+                JOptionPane.showMessageDialog(null, "DETENCAO REGISTADA COM SUCESSO");  
+            }
         }
     }
     public void listarDetencoes() {
@@ -378,18 +414,23 @@ public class ControllerTrabalho {
         //dados do civil, necessarias para a ocorrencia
         CivilDto civilDto = viewOcorrencias.recolherDadosCivil();
         String idBI = viewOcorrencias.pedirNumeroBI();
-        
+       
         //Validacao do ID do civil
         if (idBI.trim().isEmpty()) {
         JOptionPane.showMessageDialog(null, "INSIRA O NUMERO DE BI.", "AVISO", JOptionPane.WARNING_MESSAGE);
         return;
         }
-        for (Civil c : ocorrenciaEmCurso.getEnvolvidos()) {
-        if (c.getBI().equals(idBI)) {
-            JOptionPane.showMessageDialog(null, "BI JA EXISTE.", "AVISO", JOptionPane.WARNING_MESSAGE);
+        if (idBI.length() < 13 || idBI.length() > 13){
+            JOptionPane.showMessageDialog(null, "O NUMERO DE BI DEVE TER 13 CARACTERES.", "AVISO", JOptionPane.WARNING_MESSAGE);
             viewOcorrencias.limparCampoBI();
-            return;
+            return;   
         }
+        for (Civil c : ocorrenciaEmCurso.getEnvolvidos()) {
+            if (c.getBI().equals(idBI)) {
+                JOptionPane.showMessageDialog(null, "BI JA EXISTE.", "AVISO", JOptionPane.WARNING_MESSAGE);
+                viewOcorrencias.limparCampoBI();
+                return;
+             }
         }
         LocalDate dataNascimento = viewOcorrencias.pedirDataNascimento();
         if (dataNascimento == null) {
@@ -402,6 +443,20 @@ public class ControllerTrabalho {
             viewOcorrencias.limparCampoDataNasc();
             return;
           }
+        
+        if (civilDto.papel == papelCivil.TESTEMUNHA && ! Civil.validarIdadeTestemunha(dataNascimento)){
+            JOptionPane.showMessageDialog(null, "MENOR DE 5 ANOS NAO PODE SER TESTEMUNHA.", "AVISO", JOptionPane.WARNING_MESSAGE);
+            viewOcorrencias.limparCampoDataNasc();
+            return; 
+        }
+        
+        String contacto = viewOcorrencias.pedirContacto();
+        if (contacto.length() < 9 || contacto.length() > 9){
+             JOptionPane.showMessageDialog(null, "O CONTACTO DEVE TER 9 NUMEROS.", "AVISO", JOptionPane.WARNING_MESSAGE);
+             viewOcorrencias.limparCampoContacto();
+            return;   
+        }
+        
         //adicionar civil
         civilDto.idBI = idBI;
         civilDto.dataNascimento = dataNascimento.toString();
